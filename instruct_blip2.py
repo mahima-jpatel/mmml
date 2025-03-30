@@ -8,7 +8,7 @@ from tqdm import tqdm
 # Model and dataset details
 MODEL_ID = "Salesforce/instructblip-vicuna-7b"
 DATASET_NAME = "AI4Math/MathVista"
-OUTPUT_FILE = "testinstructblip_results.json"
+OUTPUT_FILE = "testinstructblip_results_prompt_tunes.json"
 
 # Initialize model and processor
 model = InstructBlipForConditionalGeneration.from_pretrained(
@@ -20,7 +20,7 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 model.to(device)
 
 dataset = load_dataset(DATASET_NAME, split="testmini")
-print("Dataset loaded")
+#print("Dataset loaded")
 
 # Store results in a dictionary
 results = {}
@@ -28,9 +28,9 @@ results = {}
 for i, sample in tqdm(enumerate(dataset), total=len(dataset)):
     #print(f"Processing sample {i}")
     image = sample["decoded_image"].convert("RGB")
-    print(sample["decoded_image"])
-    print(image)
-    prompt = f"Please look at the question: {sample['query']}. Look at the image and reason the solution and return final answer. Answer:"
+    #print(sample["decoded_image"])
+    #print(image)
+    prompt = f"Please look at the question: {sample['query']}. Look at the image and reason through the solution carefully. Let's think step by step to solve this mathematical problem. Here are two examples to guide our reasoning: Example 1: Question: Solve for x in the equation 2x + 5 = 13. Step 1: Subtract 5 from both sides → 2x = 8. Step 2: Divide both sides by 2 → x = 4. Final Answer: x = 4. Example 2: Question: A rectangle has a length of 10 units and width of 4 units. What is its area? Step 1: Use the formula: Area = length × width. Step 2: Area = 10 × 4 = 40. Final Answer: 40 square units. Now apply similar reasoning to solve the given problem. Answer:"
     inputs = processor(images=image, text=prompt, return_tensors="pt").to(device="cuda", dtype=torch.float16).to(device)
 
 # autoregressively generate an answer
@@ -47,7 +47,7 @@ for i, sample in tqdm(enumerate(dataset), total=len(dataset)):
     outputs[outputs == 0] = 2 # this line can be removed once https://github.com/huggingface/transformers/pull/24492 is  fixed
     generated_text = processor.batch_decode(outputs, skip_special_tokens=True)[0].strip()
 
-    print(processor.batch_decode(outputs, skip_special_tokens=True))
+    #print(processor.batch_decode(outputs, skip_special_tokens=True))
     response = processor.batch_decode(outputs, skip_special_tokens=True)[0].strip()
     
     # Store result
@@ -70,5 +70,5 @@ for i, sample in tqdm(enumerate(dataset), total=len(dataset)):
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
         json.dump(results, f, indent=4, ensure_ascii=False)
 
-    if i >= 9: 
-        break
+    #if i >= 9: 
+     #   break
