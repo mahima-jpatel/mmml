@@ -63,10 +63,6 @@ To ensure that our chunking strategies generalize across **diverse textual struc
 | **War and Peace** | Epic novel with historical exposition and multiple plotlines. | Long contextual dependencies across scenes | Large sections where naive chunking splits continuous reasoning. |
 | **Shakespeare Complete Works** | Collection of plays and sonnets with stage directions and dialogue. | Scripted format (Act → Scene → Line) | Metadata loss and inter-speaker references. |
 
----
-
-### Example Evaluation Files
-
 Processed text and evaluation prompts are available under `data/`:
 ```
 data/
