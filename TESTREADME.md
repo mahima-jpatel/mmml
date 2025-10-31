@@ -45,7 +45,7 @@ src/
 ├── evaluation/
 │ ├── eval_retrieval.py # computes metrics (Exact, ROUGE, Cosine, LLM)
 | ├── self_rag.py
-
+```
 
 Each component is modular, allowing easy replacement of embedding or LLM backends.
 
