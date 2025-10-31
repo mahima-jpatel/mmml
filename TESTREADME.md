@@ -50,18 +50,69 @@ src/
 Each component is modular, allowing easy replacement of embedding or LLM backends.
 
 ---
+## 3.5 Datasets Explored
+To ensure that our chunking strategies generalize across **diverse textual structures**, we evaluated them on **seven large public-domain documents** with varying linguistic and organizational characteristics:
 
-## 4. Design Decisions
+| Dataset | Description | Structure Complexity | Primary Challenges for Chunking |
+|----------|-------------|----------------------|---------------------------------|
+| **The Bible (KJV)** | Religious text composed of 66 books with verses, cross-references, and heavy use of pronouns (“he”, “him”, “this”). | 🔹 Highly hierarchical (Book → Chapter → Verse) | Lost context & broken references between verses. |
+| **The U.S. Constitution** | Foundational legal document with structured sections and amendments. | 🔹 Logical hierarchy (Article → Section → Clause) | Context loss in cross-referential clauses (“as provided in the previous section…”). |
+| **Moby Dick** | Literary narrative rich in metaphors and long sentences. | 🔹 Linear but semantically dense | Sentence boundaries often misalign with semantic units. |
+| **Les Misérables** | Philosophical and emotional narrative with internal monologues. | 🔹 Multi-topic, multi-speaker structure | Semantic drift within paragraphs; requires contextual overlap. |
+| **Frankenstein** | Scientific-gothic narrative with shifting first-person perspectives. | 🔹 Nested narrative structure (“letters → story → story”) | Pronoun coreference; maintaining narrator identity. |
+| **War and Peace** | Epic novel with historical exposition and multiple plotlines. | 🔹 Long contextual dependencies across scenes | Large sections where naive chunking splits continuous reasoning. |
+| **Shakespeare Complete Works** | Collection of plays and sonnets with stage directions and dialogue. | 🔹 Scripted format (Act → Scene → Line) | Metadata loss and inter-speaker references. |
 
-| Design Choice | Rationale |
-|----------------|------------|
-| **Async OpenAI Calls** | Used for efficient summarization of large datasets (15 concurrent requests). |
-| **Hierarchical Metadata JSON** | Keeps `document_meta`, `section_meta`, and `paragraph_meta` layers for traceability. |
-| **Hybrid Retrieval (BM25 + Dense)** | Balances lexical precision with semantic recall. |
-| **Self-RAG Escalation** | Mimics real-world RAG behavior — gradually widens search until a confident answer is found. |
-| **LLM-based Evaluation** | Goes beyond exact string match — measures semantic correctness using GPT-4o-mini. |
+Each dataset stresses the chunking system in a different way:
+
+- **Legal and hierarchical** texts (e.g., Constitution, Bible) demand structural metadata preservation.  
+- **Dialogic and narrative** texts (e.g., Shakespeare, Les Misérables) require sentence-level continuity and overlapping context.  
+- **Philosophical or historical** texts (e.g., War and Peace, Frankenstein) test semantic grouping and long-range dependency modeling.
+
+Together, these corpora provide a comprehensive benchmark for evaluating:
+- chunk coherence,  
+- retrieval accuracy under different granularities, and  
+- robustness of contextual preservation mechanisms.
 
 ---
+
+### Example Evaluation Files
+
+Processed text and evaluation prompts are available under `data/`:
+```
+data/
+├── bible_kjv.txt
+├── constitution_full.txt
+├── frankenstein.txt
+├── les_miserables.txt
+├── moby_dick.txt
+├── shakespeare_complete.txt
+├── war_and_peace.txt
+├── evaluation_set.jsonl
+└── eval.jsonl
+```
+
+This section leads directly into the **Design Decisions** section — motivating why hierarchical and adaptive chunking became necessary to handle such a diverse corpus.
+
+---
+
+## 4. Design Decisions & Rationale
+
+This project was not built as a single algorithm, but as a **progressive exploration** of how chunking, retrieval, and reasoning interact in RAG systems.  
+Below we trace the evolution from naive heuristics to adaptive self-guided retrieval — highlighting the motivation, design trade-offs, and final insights.
+
+---
+
+### 4.1 From Naive to Intelligent Chunking
+
+**Goal:** make every retrieved unit of text *semantically self-contained* — so an LLM can reason over it without needing unseen context.
+
+#### Naive Fixed-Size Chunking
+> “Split every 1000 tokens and hope context stays intact.”
+
+**Problem:** breaks in the middle of sentences or references.  
+Example:
+
 
 ## 5. Evaluation Methodology
 
