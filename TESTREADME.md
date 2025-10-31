@@ -55,13 +55,13 @@ To ensure that our chunking strategies generalize across **diverse textual struc
 
 | Dataset | Description | Structure Complexity | Primary Challenges for Chunking |
 |----------|-------------|----------------------|---------------------------------|
-| **The Bible (KJV)** | Religious text composed of 66 books with verses, cross-references, and heavy use of pronouns (“he”, “him”, “this”). | 🔹 Highly hierarchical (Book → Chapter → Verse) | Lost context & broken references between verses. |
-| **The U.S. Constitution** | Foundational legal document with structured sections and amendments. | 🔹 Logical hierarchy (Article → Section → Clause) | Context loss in cross-referential clauses (“as provided in the previous section…”). |
-| **Moby Dick** | Literary narrative rich in metaphors and long sentences. | 🔹 Linear but semantically dense | Sentence boundaries often misalign with semantic units. |
-| **Les Misérables** | Philosophical and emotional narrative with internal monologues. | 🔹 Multi-topic, multi-speaker structure | Semantic drift within paragraphs; requires contextual overlap. |
-| **Frankenstein** | Scientific-gothic narrative with shifting first-person perspectives. | 🔹 Nested narrative structure (“letters → story → story”) | Pronoun coreference; maintaining narrator identity. |
-| **War and Peace** | Epic novel with historical exposition and multiple plotlines. | 🔹 Long contextual dependencies across scenes | Large sections where naive chunking splits continuous reasoning. |
-| **Shakespeare Complete Works** | Collection of plays and sonnets with stage directions and dialogue. | 🔹 Scripted format (Act → Scene → Line) | Metadata loss and inter-speaker references. |
+| **The Bible (KJV)** | Religious text composed of 66 books with verses, cross-references, and heavy use of pronouns (“he”, “him”, “this”). | Highly hierarchical (Book → Chapter → Verse) | Lost context & broken references between verses. |
+| **The U.S. Constitution** | Foundational legal document with structured sections and amendments. | Logical hierarchy (Article → Section → Clause) | Context loss in cross-referential clauses (“as provided in the previous section…”). |
+| **Moby Dick** | Literary narrative rich in metaphors and long sentences. | Linear but semantically dense | Sentence boundaries often misalign with semantic units. |
+| **Les Misérables** | Philosophical and emotional narrative with internal monologues. | Multi-topic, multi-speaker structure | Semantic drift within paragraphs; requires contextual overlap. |
+| **Frankenstein** | Scientific-gothic narrative with shifting first-person perspectives. | Nested narrative structure (“letters → story → story”) | Pronoun coreference; maintaining narrator identity. |
+| **War and Peace** | Epic novel with historical exposition and multiple plotlines. | Long contextual dependencies across scenes | Large sections where naive chunking splits continuous reasoning. |
+| **Shakespeare Complete Works** | Collection of plays and sonnets with stage directions and dialogue. | Scripted format (Act → Scene → Line) | Metadata loss and inter-speaker references. |
 
 Each dataset stresses the chunking system in a different way:
 
