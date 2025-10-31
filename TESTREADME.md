@@ -31,6 +31,20 @@ The final system combines **four chunking strategies** with a **Self-RAG evaluat
 
 ## 3. System Architecture
 
+src/
+├── chunkers/
+│ ├── naive_chunker.py
+│ ├── sentence_chunker.py
+│ ├── semantic_chunker.py
+│ ├── hierarchical_chunker.py
+│
+├── metadata/
+│ ├── build_metadata.py # builds section, paragraph maps
+│ ├── summarize_sections.py # generates summaries for hierarchy
+│
+├── evaluation/
+│ ├── eval_retrieval.py # computes metrics (Exact, ROUGE, Cosine, LLM)
+| ├── self_rag.py
 
 
 Each component is modular, allowing easy replacement of embedding or LLM backends.
