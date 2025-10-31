@@ -63,17 +63,6 @@ To ensure that our chunking strategies generalize across **diverse textual struc
 | **War and Peace** | Epic novel with historical exposition and multiple plotlines. | Long contextual dependencies across scenes | Large sections where naive chunking splits continuous reasoning. |
 | **Shakespeare Complete Works** | Collection of plays and sonnets with stage directions and dialogue. | Scripted format (Act → Scene → Line) | Metadata loss and inter-speaker references. |
 
-Each dataset stresses the chunking system in a different way:
-
-- **Legal and hierarchical** texts (e.g., Constitution, Bible) demand structural metadata preservation.  
-- **Dialogic and narrative** texts (e.g., Shakespeare, Les Misérables) require sentence-level continuity and overlapping context.  
-- **Philosophical or historical** texts (e.g., War and Peace, Frankenstein) test semantic grouping and long-range dependency modeling.
-
-Together, these corpora provide a comprehensive benchmark for evaluating:
-- chunk coherence,  
-- retrieval accuracy under different granularities, and  
-- robustness of contextual preservation mechanisms.
-
 ---
 
 ### Example Evaluation Files
