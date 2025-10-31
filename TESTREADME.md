@@ -185,11 +185,11 @@ While Self-RAG explores linearly (paragraph → neighbors → section), future R
 This allows retrieval to:
 - explore multiple semantic paths concurrently,  
 - backtrack from misleading chunks, and  
-- build *robust reasoning trees* for complex multi-hop questions.
+- build robust reasoning trees for complex multi-hop questions.
 
 **In short:**  
-> Self-RAG is adaptive;  
-> MCTS-RAG will be strategic.
+- Self-RAG is adaptive;  
+- MCTS-RAG will be strategic.
 
 ---
 
