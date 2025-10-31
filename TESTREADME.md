@@ -83,27 +83,20 @@ This section leads directly into the **Design Decisions** section — motivating
 
 ## 4. Design Decisions & Rationale
 
-This project was not built as a single algorithm, but as a **progressive exploration** of how chunking, retrieval, and reasoning interact in RAG systems.  
-Below we trace the evolution from naive heuristics to adaptive self-guided retrieval — highlighting the motivation, design trade-offs, and final insights.
-
----
-
-### 4.1 From Naive to Intelligent Chunking
-
-**Goal:** make every retrieved unit of text *semantically self-contained* — so an LLM can reason over it without needing unseen context.
+This project was not built as a single algorithm, but as a progressive exploration of how chunking, retrieval, and reasoning interact in RAG systems.  
+Below we trace the evolution from naive heuristics to adaptive self-guided retrieval, highlighting the motivation, design trade-offs, and final insights.
 
 #### Naive Fixed-Size Chunking
 > “Split every 1000 tokens and hope context stays intact.”
 
 **Problem:** breaks in the middle of sentences or references.  
 Example:
-> Chunk 1: " of Representatives may choose a President whenever the right of choice shall havedevolved upon them, and for the case of the death of any of the persons from whom theSenate may choose a Vice President whenever the right of choice shall have devolved uponthem.\nSection 5\nSections 1 and 2 shall take effect on the 15th day of October following the ratification of this\narticle.\nSection 6\nThis article shall be inoperative unless it shall have been ratified as an amendment to the\nConstitution by the legislatures of three-fourths of the several States within seven yearsfrom the date of its submission.\nThe Twentieth Amendment\n17was proposed by Congress on March 2, 1932 when it passed\nthe Senate,18having previously passed the House on March 1.19It appears officially in 47 Stat.\n745. Ratification was completed on January 23, 1933, when the thirty-sixth state approved theAmendment, there being then forty-eight states in the Union. On February 6, 1933, Secretaryof State Henry Stimson certified tha",
- 
-> Chunk 2: "t it had become a part of the Constitution.\n20\nThe several state legislatures ratified the Twentieth Amendment on the following dates:\nVirginia, March 4, 1932; New York, March 11, 1932; Mississippi, March 16, 1932; ArkansasMarch 17, 1932; Kentucky, March 17, 1932; New Jersey, March 21, 1932; South Carolina,March 25, 1932; Michigan, March 31, 1932; Maine, April 1, 1932; Rhode Island, April 14, 1932;Illinois, April 21, 1932; Louisiana, June 22, 1932; West Virginia, July 30, 1932; Pennsylvania,August 11, 1932; Indiana, August 15, 1932; Texas, September 7, 1932; Alabama, September 13,1932; California, January 3, 1933; North Carolina, January 5, 1933; North Dakota, January 9,1933; Minnesota, January 12, 1933; Arizona, January 13, 1933; Montana, January 13, 1933;Nebraska, January 13, 1933; Oklahoma, January 13, 1933; Kansas, January 16, 1933; Oregon,January 16, 1933; Delaware, January 19, 1933; Washington, January 19, 1933; Wyoming,January 19, 1933; Iowa, January 20, 1933; South Dakota, Janu",
+> Chunk 1: "On February 6, 1933, Secretaryof State Henry Stimson certified tha",
+> Chunk 2: "t it had become a part of the Constitution.\n",
 
-Chunk 1 refers to something in Chunk 2 — retrieval fails to reconstruct meaning.
+Chunk 1 refers to something in Chunk 2 with the word "it" and retrieval fails to reconstruct meaning.
 
-**Lesson:** token-level segmentation optimizes for compute, not comprehension.
+**Lesson:** token-level segmentation optimizes for compute and not comprehension.
 
 ---
 
@@ -142,14 +135,14 @@ Two paragraphs describing “Captain Ahab’s obsession” remain together even 
 Retrieval can re-rank by section relevance or use summaries as lightweight surrogates when paragraphs are too fine-grained.
 
 **Trade-off:**  
-Requires up-front preprocessing (section detection + summarization).
+Requires up-front preprocessing of section detection and summarization.
 
 ---
 
 ### 4.2 Toward Adaptive Retrieval — Self-RAG
 
 Even hierarchical chunking cannot guarantee that a single granularity fits all questions.  
-Hence, we introduced **Self-RAG**, an *adaptive retrieval pipeline*:
+Hence, we introduced Self-RAG, an adaptive retrieval pipeline:
 
 1. **Start small** — retrieve the top paragraphs via hybrid BM25 + dense embeddings.  
 2. **Ask an LLM** if the text directly answers the question.  
@@ -195,8 +188,8 @@ This allows retrieval to:
 - build *robust reasoning trees* for complex multi-hop questions.
 
 **In short:**  
-> Self-RAG is *adaptive*;  
-> **MCTS-RAG will be *strategic*.***
+> Self-RAG is adaptive;  
+> MCTS-RAG will be strategic.
 
 ---
 
@@ -205,47 +198,16 @@ This allows retrieval to:
 Chunking is no longer a preprocessing step — it is an **integral part of retrieval reasoning**.  
 By evolving from naive token splits to adaptive Self-RAG and planning-based MCTS-RAG, we move toward systems that **think before they fetch**.
 
+---
+
 ## 5. Evaluation Methodology
 
-### Dataset
-Three public-domain texts were used:
-1. *Moby Dick* (literary narrative)
-2. *The Bible (KJV)* (hierarchical structure)
-3. *The U.S. Constitution* (legal document)
-
-Each document was processed into chunks via all four strategies.
 
 ### Evaluation Metrics
 
-| Metric | Description |
-|--------|--------------|
-| **Exact Match** | Binary match of gold answer text. |
-| **ROUGE-L F1** | Overlap-based similarity score. |
-| **Cosine Similarity** | Semantic closeness of embeddings. |
-| **LLM Judge** | GPT-4o-mini verdict on whether retrieved text answers query. |
-| **Mean Score** | Averaged composite metric. |
 
-### Self-RAG Query Categories
-
-- *Exact Match*
-- *Lost Context*
-- *Broken References*
-- *Poor Retrieval*
-- *Understand Hierarchy*
-
----
 
 ## 6. Results Summary
-
-| Chunking Strategy | Mean Retrieval Score | LLM Correct (%) |
-|--------------------|---------------------|-----------------|
-| Naive (500 tokens) | 0.18 | 32% |
-| Sentence-based | 0.31 | 54% |
-| Semantic | 0.42 | 67% |
-| Hierarchical | 0.52 | 73% |
-| **Self-RAG (proposed)** | **0.66** | **88%** |
-
-Self-RAG achieved nearly **3× improvement over naive chunking**, particularly in the *“Lost Context”* and *“Understand Hierarchy”* categories.
 
 ---
 
