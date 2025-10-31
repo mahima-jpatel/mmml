@@ -116,7 +116,109 @@ Example:
  
 > Chunk 2: "t it had become a part of the Constitution.\n20\nThe several state legislatures ratified the Twentieth Amendment on the following dates:\nVirginia, March 4, 1932; New York, March 11, 1932; Mississippi, March 16, 1932; ArkansasMarch 17, 1932; Kentucky, March 17, 1932; New Jersey, March 21, 1932; South Carolina,March 25, 1932; Michigan, March 31, 1932; Maine, April 1, 1932; Rhode Island, April 14, 1932;Illinois, April 21, 1932; Louisiana, June 22, 1932; West Virginia, July 30, 1932; Pennsylvania,August 11, 1932; Indiana, August 15, 1932; Texas, September 7, 1932; Alabama, September 13,1932; California, January 3, 1933; North Carolina, January 5, 1933; North Dakota, January 9,1933; Minnesota, January 12, 1933; Arizona, January 13, 1933; Montana, January 13, 1933;Nebraska, January 13, 1933; Oklahoma, January 13, 1933; Kansas, January 16, 1933; Oregon,January 16, 1933; Delaware, January 19, 1933; Washington, January 19, 1933; Wyoming,January 19, 1933; Iowa, January 20, 1933; South Dakota, Janu",
 
+Chunk 1 refers to something in Chunk 2 — retrieval fails to reconstruct meaning.
 
+**Lesson:** token-level segmentation optimizes for compute, not comprehension.
+
+---
+
+#### Sentence-Based Chunking
+
+- Uses sentence boundaries (`sent_tokenize`) to merge complete thoughts.
+- Adds minimal overlap (e.g., one sentence) between adjacent chunks.
+
+**Benefit:** syntactic completeness → better embedding coherence.  
+**Limitation:** sentences ≠ semantics — consecutive sentences may still describe separate ideas.
+
+---
+
+#### Semantic Chunking
+> "Group by meaning, not by length.”
+
+- Uses SentenceTransformer embeddings to compute cosine similarity between sentences.
+- Merges adjacent sentences until similarity falls below a threshold.
+
+**Example:**  
+Two paragraphs describing “Captain Ahab’s obsession” remain together even if long; an unrelated description of the ship’s mast forms a new chunk.
+
+---
+
+#### Hierarchical Chunking
+> “Respect the document’s natural boundaries.”
+
+- Builds a **three-level metadata graph**: `document → sections → paragraphs`.
+- Each section stores:
+  - raw text
+  - paragraph list
+  - auto-generated summary (`Summary:` field)
+- Chunks inherit parent metadata (titles, headings).
+
+**Benefit:**  
+Retrieval can re-rank by section relevance or use summaries as lightweight surrogates when paragraphs are too fine-grained.
+
+**Trade-off:**  
+Requires up-front preprocessing (section detection + summarization).
+
+---
+
+### 4.2 Toward Adaptive Retrieval — Self-RAG
+
+Even hierarchical chunking cannot guarantee that a single granularity fits all questions.  
+Hence, we introduced **Self-RAG**, an *adaptive retrieval pipeline*:
+
+1. **Start small** — retrieve the top paragraphs via hybrid BM25 + dense embeddings.  
+2. **Ask an LLM** if the text directly answers the question.  
+3. **If not**, escalate context:
+   - include **neighboring paragraphs** (± 2)
+   - expand to the **section** (with summary)
+   - finally, back off to **document summary**  
+
+This mirrors human reasoning: start local, zoom out until confidence.
+
+**Benefits**
+- Reduces hallucinated answers (retrieval stops only when the answer is confirmed).  
+- Matches real-world RAG workflows that balance recall vs efficiency.  
+- Enables dynamic chunk selection without re-embedding the corpus.
+
+---
+
+### 4.3 Key System Design Choices
+
+| Design Choice | Rationale |
+|----------------|------------|
+| **Async OpenAI Calls** | Parallelized summarization and answer-checking (15 concurrent requests). |
+| **Hierarchical Metadata JSON** | Provides traceability across `document_meta`, `section_meta`, and `paragraph_meta`. |
+| **Hybrid Retrieval (BM25 + Dense)** | Combines lexical precision (BM25) with semantic recall (dense). |
+| **Self-RAG Escalation** | Expands context progressively until the LLM confirms coverage. |
+| **LLM-based Evaluation** | Measures *semantic correctness*, not just string match. |
+
+---
+
+### 4.4 Looking Ahead — MCTS-RAG (Next Step)
+
+While Self-RAG explores linearly (paragraph → neighbors → section), future RAG systems can reason **non-linearly** using *search-based planning*.
+
+#### MCTS-RAG: Monte-Carlo Tree Search for Retrieval
+- Each node = a retrieval unit (chunk or section).  
+- Each edge = a reasoning step (e.g., “expand context”, “refocus on entity X”).  
+- **Value function** = LLM-judged answer confidence.  
+- **Selection policy** = Upper Confidence Bound (UCB1) on exploration vs exploitation.  
+
+This allows retrieval to:
+- explore multiple semantic paths concurrently,  
+- backtrack from misleading chunks, and  
+- build *robust reasoning trees* for complex multi-hop questions.
+
+**In short:**  
+> Self-RAG is *adaptive*;  
+> **MCTS-RAG will be *strategic*.***
+
+---
+
+### 4.5 Takeaway
+
+Chunking is no longer a preprocessing step — it is an **integral part of retrieval reasoning**.  
+By evolving from naive token splits to adaptive Self-RAG and planning-based MCTS-RAG, we move toward systems that **think before they fetch**.
 
 ## 5. Evaluation Methodology
 
