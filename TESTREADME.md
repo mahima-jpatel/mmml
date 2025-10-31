@@ -30,7 +30,7 @@ The final system combines **four chunking strategies** with a **Self-RAG evaluat
 ---
 
 ## 3. System Architecture
-
+```
 src/
 ├── chunkers/
 │ ├── naive_chunker.py
