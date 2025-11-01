@@ -304,22 +304,32 @@ By the final configuration, **Self-RAG + Hierarchical Chunking** achieves
 
 ---
 
-### 🧩 Environment Setup
+### Environment Setup
 
-1. **Create and activate a virtual environment, Install all dependencies**
+1. **Create and activate a virtual environment**
 
 ```bash
-conda create -n smartchunk python=3.9 spacy
+conda create -n smartchunk python=3.9
 conda activate smartchunk
 pip install -r requirements.txt
 ```
 
-2. **Set up your OpenAI API key**
+2. **Upgrade pip and essential build tools**
+```bash
+pip install --upgrade pip setuptools wheel
+```
+
+3. **Install all dependencies**
+```bash
+pip install --upgrade pip setuptools wheel
+```
+
+4. **Set up your OpenAI API key**
 ```bash
 export OPENAI_API_KEY="your_api_key_here"
 ```
 
-3. Preparing Artifacts: Before running evaluations, ensure that your embeddings and metadata are built for the corpus.
+5. Preparing Artifacts: Before running evaluations, ensure that your embeddings and metadata are built for the corpus.
 ```bash
 
 ```
