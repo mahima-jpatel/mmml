@@ -208,13 +208,13 @@ Each question–answer pair tests a specific retrieval failure mode:
 
 | Category | What It Tests | Example |
 |-----------|----------------|----------|
-| **Understand Hierarchy** | Can the retriever follow structured hierarchy (document → section → paragraph)? | “Which section discusses the causes of global warming?” |
-| **Exact Match** | Can it locate literal matches? | “Finish the line: It was the best of times, it was the ___.” |
-| **Lost Context** | Can it recover multi-sentence evidence spread across chunks? | “Why did the author leave the city despite success?” |
-| **Poor Retrieval** | Can it disambiguate distractors with similar keywords? | “Which law was repealed after the Boston Tea Party?” |
-| **Broken References** | Can it resolve pronouns and context carried across sentences? | “Who was he referring to in the previous paragraph?” |
+| **Understand Hierarchy** | Can the retriever follow structured hierarchy (document → section → paragraph)? | “In which book of the bible is the story of David and Goliath found?” |
+| **Exact Match** | Can it locate literal matches? | “What is the color of the whale in Moby Dick?” |
+| **Lost Context** | Can it recover multi-sentence evidence spread across chunks? | “How does Frankenstein describe the moment he saw the creature?” |
+| **Poor Retrieval** | Can it disambiguate distractors with similar keywords? | “What does the U.S. Constitution establish as the supreme law of the land?” |
+| **Broken References** | Can it resolve pronouns and context carried across sentences? | “In War and Peace, who is 'he' when it says 'he gazed at the battlefield'?” |
 
-Each category isolates a retrieval weakness — **syntactic**, **semantic**, or **contextual** — providing a holistic view of how chunking design affects evidence recall.
+Each category isolates a retrieval weakness — **syntactic**, **semantic**, or **contextual**, providing a holistic view of how chunking design affects evidence recall.
 
 ---
 
@@ -254,20 +254,20 @@ We computed the following metrics:
 
 ### 6.2 Qualitative Insights
 
-#### 🧱 Naive → Sentence Chunking  
+#### Naive → Sentence Chunking  
 Sentence-level segmentation improves coherence and prevents mid-sentence breaks, yielding a notable rise in **MRR (0.40 → 0.48)**.  
 However, Exact Match slightly drops since contiguous answer spans sometimes split across boundaries.
 
-#### 🧩 Semantic Chunking  
+#### Semantic Chunking  
 Semantic grouping merges sentences that share conceptual similarity.  
 This stabilizes embedding quality — even when literal overlap is absent, **cosine similarity** increases, indicating retrieval of semantically relevant chunks.
 
-#### 🪜 Hierarchical Chunking  
+#### Hierarchical Chunking  
 Incorporating document structure (Document → Section → Paragraph) improves **Exact Match (0.50)** and **Recall@10 (0.64)**.  
 This method particularly excels on *Understand Hierarchy* and *Lost Context* questions.  
 Increasing fan-out (`top_docs=7`, `top_secs=50`) further improved recall by widening the search across document substructures.
 
-#### 🔁 Self-RAG with Hierarchical Retrieval  
+#### Self-RAG with Hierarchical Retrieval  
 Self-RAG introduces a reflexive feedback loop:  
 > Retrieval → LLM verification → Context expansion → Verified coverage  
 
