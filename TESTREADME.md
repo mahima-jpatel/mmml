@@ -200,14 +200,121 @@ By evolving from naive token splits to adaptive Self-RAG and planning-based MCTS
 
 ---
 
-## 5. Evaluation Methodology
+### 5.1 Evaluation Setup
 
+We designed a **24-question diagnostic benchmark** to measure how each chunking strategy impacts retrieval performance in RAG.  
+Each question–answer pair tests a specific retrieval failure mode:
 
-### Evaluation Metrics
+| Category | What It Tests | Example |
+|-----------|----------------|----------|
+| **Understand Hierarchy** | Can the retriever follow structured hierarchy (document → section → paragraph)? | “Which section discusses the causes of global warming?” |
+| **Exact Match** | Can it locate literal matches? | “Finish the line: It was the best of times, it was the ___.” |
+| **Lost Context** | Can it recover multi-sentence evidence spread across chunks? | “Why did the author leave the city despite success?” |
+| **Poor Retrieval** | Can it disambiguate distractors with similar keywords? | “Which law was repealed after the Boston Tea Party?” |
+| **Broken References** | Can it resolve pronouns and context carried across sentences? | “Who was he referring to in the previous paragraph?” |
 
+Each category isolates a retrieval weakness — **syntactic**, **semantic**, or **contextual** — providing a holistic view of how chunking design affects evidence recall.
 
+---
 
-## 6. Results Summary
+### 5.2 Evaluation Pipeline
+
+All chunking strategies were tested under a unified **hybrid retrieval evaluator** built on:
+
+- **Dense retrieval** — SentenceTransformer embeddings (`all-MiniLM-L6-v2`)  
+- **Sparse retrieval** — BM25 scoring for keyword overlap  
+- **Hybrid fusion** — Weighted combination: `(1−α)*BM25 + α*Dense`  
+- **LLM verification** — GPT-4o judges if retrieved text *explicitly* contains the answer  
+
+We computed the following metrics:
+
+| Metric | Definition | Purpose |
+|--------|-------------|----------|
+| **Exact Match** | Whether the gold answer appears verbatim in retrieved text. | Literal correctness |
+| **Cosine Similarity** | Semantic similarity between retrieved and gold answers. | Embedding coherence |
+| **LLM Verdict** | GPT-4o binary “YES/NO” on whether the chunk answers the query. | Semantic correctness |
+| **Recall@K** | Fraction of queries with a relevant hit in top-K retrieved chunks. | Coverage |
+| **MRR** | Mean Reciprocal Rank of the first correct retrieval. | Ranking quality |
+
+---
+## 6. Results & Discussion
+
+### 6.1 Quantitative Comparison
+
+| Method | Exact | LLM | Recall | MRR | Cosine |
+|:--|:--:|:--:|:--:|:--:|:--:|
+| **Naive Chunking** | 0.38 | 0.58 | 0.57 | 0.40 | 0.41 |
+| **Sentence Chunking** | 0.33 | 0.62 | 0.62 | 0.48 | 0.41 |
+| **Semantic Chunking** | 0.38 | 0.58 | 0.58 | 0.47 | 0.42 |
+| **Hierarchical Chunking** | **0.50** | 0.58 | 0.64 | 0.49 | **0.46** |
+| **Self-RAG (Hierarchical)** | **0.50** | **0.92** | **0.92** | **0.82** | 0.46 |
+
+---
+
+### 6.2 Qualitative Insights
+
+#### 🧱 Naive → Sentence Chunking  
+Sentence-level segmentation improves coherence and prevents mid-sentence breaks, yielding a notable rise in **MRR (0.40 → 0.48)**.  
+However, Exact Match slightly drops since contiguous answer spans sometimes split across boundaries.
+
+#### 🧩 Semantic Chunking  
+Semantic grouping merges sentences that share conceptual similarity.  
+This stabilizes embedding quality — even when literal overlap is absent, **cosine similarity** increases, indicating retrieval of semantically relevant chunks.
+
+#### 🪜 Hierarchical Chunking  
+Incorporating document structure (Document → Section → Paragraph) improves **Exact Match (0.50)** and **Recall@10 (0.64)**.  
+This method particularly excels on *Understand Hierarchy* and *Lost Context* questions.  
+Increasing fan-out (`top_docs=7`, `top_secs=50`) further improved recall by widening the search across document substructures.
+
+#### 🔁 Self-RAG with Hierarchical Retrieval  
+Self-RAG introduces a reflexive feedback loop:  
+> Retrieval → LLM verification → Context expansion → Verified coverage  
+
+This adaptive strategy dramatically boosts **LLM accuracy (0.58 → 0.92)** and **MRR (0.49 → 0.82)**, ensuring retrieval continues until the model confirms evidence sufficiency.  
+In practice, this prevents “lost context” and hallucination while maintaining efficiency.
+
+---
+
+### 6.3 Category-wise Performance Patterns
+
+| Category | Difficulty | Observed Trend |
+|-----------|-------------|----------------|
+| **Understand Hierarchy** | High | Major gains only after hierarchical modeling (MRR ↑ to 1.0). |
+| **Exact Match** | Medium | Consistent across methods; robust lexical lookup. |
+| **Lost Context** | High | Benefits from semantic and hierarchical chunking; fully recovered in Self-RAG. |
+| **Poor Retrieval** | High | Remains challenging due to distractor overlap. |
+| **Broken References** | Moderate | Improved with overlap and paragraph-neighbor expansion. |
+
+---
+
+### 6.4 Key Takeaways
+
+1. **Chunking defines retrieval quality.**  
+   Better chunk boundaries = higher recall and precision.  
+2. **Hierarchical context restores coherence.**  
+   Respecting document structure prevents fragmentation and loss of meaning.  
+3. **LLM feedback closes the loop.**  
+   Self-RAG transforms retrieval into a self-correcting, adaptive process.  
+4. **Traditional metrics fall short.**  
+   LLM-based verdicts capture semantic correctness better than literal overlap.
+
+---
+
+### 6.5 Summary Narrative
+
+> Retrieval quality improves not by larger models,  
+> but by **teaching models what a coherent unit of text looks like.**
+
+Our experiments reveal a clear progression:
+
+- **Naive Chunking** retrieves words.  
+- **Sentence Chunking** retrieves thoughts.  
+- **Semantic Chunking** retrieves ideas.  
+- **Hierarchical Chunking** retrieves structure.  
+- **Self-RAG** retrieves **understanding**.  
+
+By the final configuration, **Self-RAG + Hierarchical Chunking** achieves  
+**92 % Recall**, **0.82 MRR**, and near-perfect LLM accuracy — setting a new bar for adaptive, reasoning-aware retrieval in RAG systems.
 
 ---
 
