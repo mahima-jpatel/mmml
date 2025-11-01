@@ -199,6 +199,7 @@ Chunking is no longer a preprocessing step — it is an **integral part of retri
 By evolving from naive token splits to adaptive Self-RAG and planning-based MCTS-RAG, we move toward systems that **think before they fetch**.
 
 ---
+## 5. Evaluation Methodology
 
 ### 5.1 Evaluation Setup
 
