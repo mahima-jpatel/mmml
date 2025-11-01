@@ -297,22 +297,7 @@ In practice, this prevents “lost context” and hallucination while maintainin
 3. **LLM feedback closes the loop.**  
    Self-RAG transforms retrieval into a self-correcting, adaptive process.  
 4. **Traditional metrics fall short.**  
-   LLM-based verdicts capture semantic correctness better than literal overlap.
-
----
-
-### 6.5 Summary Narrative
-
-> Retrieval quality improves not by larger models,  
-> but by **teaching models what a coherent unit of text looks like.**
-
-Our experiments reveal a clear progression:
-
-- **Naive Chunking** retrieves words.  
-- **Sentence Chunking** retrieves thoughts.  
-- **Semantic Chunking** retrieves ideas.  
-- **Hierarchical Chunking** retrieves structure.  
-- **Self-RAG** retrieves **understanding**.  
+   LLM-based verdicts capture semantic correctness better than literal overlap
 
 By the final configuration, **Self-RAG + Hierarchical Chunking** achieves  
 **92 % Recall**, **0.82 MRR**, and near-perfect LLM accuracy — setting a new bar for adaptive, reasoning-aware retrieval in RAG systems.
