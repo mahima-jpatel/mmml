@@ -23,7 +23,6 @@ The final system combines **four chunking strategies** with a **Self-RAG evaluat
 |-----------|--------------|------|--------------|
 | **Naive Chunking** | Splits text into fixed-size token windows (e.g., 500 tokens). | Simple and fast. | Breaks mid-sentence; no awareness of structure. |
 | **Sentence-based Chunking** | Uses NLTK or spaCy to segment text into complete sentences, then merges them up to a token threshold. | Preserves syntactic coherence. | Ignores deeper semantic connections. |
-| **Semantic Chunking** | Uses a SentenceTransformer model to group adjacent sentences with high cosine similarity (semantic coherence). | Retains meaning and context. | Slightly more compute-heavy. |
 | **Hierarchical Chunking** | Uses document structure (sections → paragraphs → sentences) and metadata to form nested chunks, each with contextual summaries. | Preserves document hierarchy and meaning. | Requires metadata extraction. |
 | **Self-RAG Chunking** | Dynamically adjusts retrieval granularity using a Self-RAG loop — if a paragraph fails, expands to ±2 neighbors → section → section summary → document summary. | Emulates real retrieval behavior; robust to context loss. | Requires embeddings and LLM feedback loop. |
 
@@ -107,17 +106,6 @@ Chunk 1 refers to something in Chunk 2 with the word "it" and retrieval fails to
 
 **Benefit:** syntactic completeness → better embedding coherence.  
 **Limitation:** sentences ≠ semantics — consecutive sentences may still describe separate ideas.
-
----
-
-#### Semantic Chunking
-> "Group by meaning, not by length.”
-
-- Uses SentenceTransformer embeddings to compute cosine similarity between sentences.
-- Merges adjacent sentences until similarity falls below a threshold.
-
-**Example:**  
-Two paragraphs describing “Captain Ahab’s obsession” remain together even if long; an unrelated description of the ship’s mast forms a new chunk.
 
 ---
 
@@ -244,10 +232,9 @@ We computed the following metrics:
 
 | Method | Exact | LLM | Recall | MRR | Cosine |
 |:--|:--:|:--:|:--:|:--:|:--:|
-| **Naive Chunking** | 0.38 | 0.58 | 0.57 | 0.40 | 0.41 |
-| **Sentence Chunking** | 0.33 | 0.62 | 0.62 | 0.48 | 0.41 |
-| **Semantic Chunking** | 0.38 | 0.58 | 0.58 | 0.47 | 0.42 |
-| **Hierarchical Chunking** | **0.50** | 0.58 | 0.64 | 0.49 | **0.46** |
+| **Naive Chunking** | 0.33 | 0.58 | 0.58 | 0.46 | 0.42 |
+| **Sentence Chunking** | 0.38 | 0.58 | 0.58 | 0.42 | 0.438 
+| **Hierarchical Chunking** | **0.50** | 0.58 | 0.64 | 0.54 | **0.46** |
 | **Self-RAG (Hierarchical)** | **0.50** | **0.92** | **0.92** | **0.82** | 0.46 |
 
 ---
@@ -257,10 +244,6 @@ We computed the following metrics:
 #### Naive → Sentence Chunking  
 Sentence-level segmentation improves coherence and prevents mid-sentence breaks, yielding a notable rise in **MRR (0.40 → 0.48)**.  
 However, Exact Match slightly drops since contiguous answer spans sometimes split across boundaries.
-
-#### Semantic Chunking  
-Semantic grouping merges sentences that share conceptual similarity.  
-This stabilizes embedding quality — even when literal overlap is absent, **cosine similarity** increases, indicating retrieval of semantically relevant chunks.
 
 #### Hierarchical Chunking  
 Incorporating document structure (Document → Section → Paragraph) improves **Exact Match (0.50)** and **Recall@10 (0.64)**.  
