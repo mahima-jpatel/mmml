@@ -375,8 +375,8 @@ In practice, this prevents “lost context” and hallucination while maintainin
 4. **Traditional metrics fall short.**  
    LLM-based verdicts capture semantic correctness better than literal overlap
 
-By the final configuration, **Self-RAG + Hierarchical Chunking** achieves  
-**92 % Recall**, **0.82 MRR**, and near-perfect LLM accuracy — setting a new bar for adaptive, reasoning-aware retrieval in RAG systems.
+By the final configuration, **Self-RAG + Hierarchical Chunking and Summarization** achieves  
+**92 % Recall**, **0.82 MRR**, and near-perfect LLM accuracy, setting a new bar for adaptive, reasoning-aware retrieval in RAG systems.
 
 ---
 
