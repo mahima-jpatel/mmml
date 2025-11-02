@@ -215,18 +215,18 @@ This mirrors human reasoning: start local, zoom out until confidence.
 
 ### 4.4 Looking Ahead — MCTS-RAG (Next Step)
 
-While **Self-RAG** adaptively follows a single reasoning path, moving linearly from *paragraph → neighbors → section*, the next generation of retrieval systems will reason **non-linearly**, exploring multiple possible information paths simultaneously.
+While **Self-RAG** adaptively follows a single reasoning path, moving linearly from paragraph → neighbors → section, the next generation of retrieval systems will reason **non-linearly**, exploring multiple possible information paths simultaneously.
 
 #### MCTS-RAG: Monte-Carlo Tree Search for Retrieval
 
 **Core Idea:**  
 Treat retrieval as a **search problem** rather than a fixed pipeline.  
-Each node in the tree represents a *retrieved chunk or section*, and each edge corresponds to a *reasoning or query expansion step*.
+Each node in the tree represents a retrieved chunk or section, and each edge corresponds to a reasoning or query expansion step.
 
 - **Node = retrieval unit:** a paragraph, section, or retrieved snippet.  
-- **Edge = reasoning move:** e.g., *“expand around this topic,” “narrow focus to entity X,”* or *“follow a causal relationship.”*  
+- **Edge = reasoning move:** e.g., “expand around this topic,” “narrow focus to entity X,” or “follow a causal relationship.”  
 - **Value function =** measures how useful a chunk is for answering the question (judged by an LLM or scoring model).  
-- **Selection policy =** an **Upper Confidence Bound (UCB1)** balancing *exploration* (new paths) and *exploitation* (known relevant ones).
+- **Selection policy =** an **Upper Confidence Bound (UCB1)** balancing exploration (new paths) and exploitation (known relevant ones).
 
 ---
 
@@ -243,7 +243,7 @@ Each node in the tree represents a *retrieved chunk or section*, and each edge c
 3. **Simulation (Rollout):** Explore each expanded query, retrieve evidence, and estimate confidence scores for how well the content supports the answer.  
 4. **Backpropagation:** Propagate scores up the tree, prioritizing promising reasoning paths while pruning irrelevant or redundant ones.
 
-Over multiple rollouts, MCTS-RAG doesn’t just *retrieve* — it *plans* its retrieval, discovering new, contextually relevant query expansions dynamically.
+Over multiple rollouts, MCTS-RAG doesn’t just retrieve, it plans its retrieval, discovering new, contextually relevant query expansions dynamically.
 
 ---
 
@@ -257,8 +257,8 @@ Over multiple rollouts, MCTS-RAG doesn’t just *retrieve* — it *plans* its re
 | **Ideal Use Case** | Focused, short reasoning chains | Complex, multi-hop, cross-domain reasoning |
 
 **In short:**  
-- Self-RAG is *adaptive*.  
-- MCTS-RAG will be *strategic* — combining retrieval and reasoning through deliberate, tree-based exploration.
+- Self-RAG is adaptive.  
+- MCTS-RAG will be strategic — combining retrieval and reasoning through deliberate, tree-based exploration.
 
 ---
 
