@@ -232,9 +232,9 @@ We computed the following metrics:
 
 | Method | Exact | LLM | Recall | MRR | Cosine |
 |:--|:--:|:--:|:--:|:--:|:--:|
-| **Naive Chunking** | 0.33 | 0.58 | 0.58 | 0.46 | 0.42 |
-| **Sentence Chunking** | 0.38 | 0.58 | 0.58 | 0.42 | 0.438 
-| **Hierarchical Chunking** | **0.50** | 0.58 | 0.64 | 0.54 | **0.46** |
+| **Naive Chunking** | 0.33 | 0.54 | 0.53 | 0.41 | 0.42 |
+| **Sentence Chunking** | 0.38 | 0.58 | 0.58 | 0.43 | 0.43 
+| **Hierarchical Chunking** | **0.50** | 0.54 | 0.64 | 0.54 | **0.46** |
 | **Self-RAG (Hierarchical)** | **0.50** | **0.92** | **0.92** | **0.82** | 0.46 |
 
 ---
@@ -312,9 +312,54 @@ pip install --upgrade pip setuptools wheel
 export OPENAI_API_KEY="your_api_key_here"
 ```
 
-5. Preparing Artifacts: Before running evaluations, ensure that your embeddings and metadata are built for the corpus.
-```bash
+5. **Preparing Artifacts: Before running evaluations, ensure that your embeddings and metadata are built for the corpus**
+   
+   A. Naive Artifacts
+   ```bash
+   python -m src.embeddings.build_naive_embeddings
+   ```
+   This will generate:
+   ```
+   artifacts/naive_faiss/
+   ├── faiss_flat.index
+   ├── bm25_index.pkl
+   ├── metadata.json
+   └── paragraphs.json
 
-```
+   ```
+
+   B. SmartSentence (Sentence-level Semantic Index)
+   ```bash
+   python -m src.embeddings.build_smart_sentence_embeddings
+   ```
+
+   C. Hierarchical Artifacts
+   ```bash
+   python -m src.embeddings.build_hierarchical_embeddings
+   ```
+
+   D. Verify and Summarize Metadata
+   ```bash
+   python -m src.summarizers.summarizer.py --meta_path artifacts/hierarchical_faiss/metadata.json
+   ```
+
+6. **Running Evaluations: After preparing artifacts, run evaluations for each retrieval mode**
+   
+   A. Naive
+   ```bash
+   python -m src.evaluators.eval_unified --artifacts artifacts/naive_faiss
+   ```
+   B. Smart Sentence
+   ```bash
+   python -m src.evaluators.eval_unified --artifacts artifacts/smart_sentence_faiss
+   ```
+   C. Hierarchical
+   ```bash
+   python -m src.evaluators.eval_unified --artifacts artifacts/hierarchical_faiss
+   ```
+   D. Self-Rag
+   ```bash
+   python -m src.evaluators.eval_selfrag --top_k 5 --alpha_dense 0.5
+   ```
 
 
