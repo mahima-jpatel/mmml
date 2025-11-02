@@ -448,7 +448,9 @@ export OPENAI_API_KEY="your_api_key_here"
 - Hybrid scoring: score = (1 - α) * BM25 + α * cosine_dense with α = 0.5 unless stated.
 - LLM judge (Self-RAG): gpt-4o
 
-## 7 Next Steps — MCTS-RAG (Not Implemented Yet)
+---
+
+## 7. Next Steps — MCTS-RAG (Not Implemented Yet)
 
 While **Self-RAG** adaptively follows a single reasoning path, moving linearly from paragraph → neighbors → section, the next generation of retrieval systems will reason **non-linearly**, exploring multiple possible information paths simultaneously.
 
