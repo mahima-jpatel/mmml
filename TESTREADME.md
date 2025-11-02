@@ -157,8 +157,14 @@ Each section is summarized **in parallel** using asynchronous OpenAI calls (up t
 - By embedding these summaries alongside paragraphs, retrieval can back off to summaries when detailed text is too granular.
 
 Example:
-> **Section:** “Article I — Legislative Branch”  
-> **Summary:** “Establishes Congress as the law-making body composed of the House and Senate, defining their powers and election rules.”
+```
+{
+      "sid": "doc0_sec4",
+      "did": "doc0",
+      "title": "The First Book of Moses: Called Genesis (cont.)",
+      "summary": "In this passage from Genesis, Cain is cursed by God for killing his brother Abel, resulting in his inability to farm the land and a life of wandering. Cain expresses his distress over the severity of his punishment, fearing for his life as he becomes a fugitive. God places a mark on Cain to protect him from being killed, and Cain settles in the land of Nod, where he builds a city and has a son named Enoch, leading to a lineage that includes notable figures such as Lamech, who takes two wives and boasts about having killed a man."
+}
+```
 
 ##### b. Multi-Section Summaries  
 After section summaries are created, the system merges related or adjacent sections and generates **tier-2 summaries**.  
