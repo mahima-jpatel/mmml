@@ -170,11 +170,40 @@ Example:
 After section summaries are created, the system merges related or adjacent sections and generates **tier-2 summaries**.  
 This captures relationships across neighboring topics or sub-sections, such as cause-and-effect or cross-referencing between clauses.
 
+Example:
+```
+{
+      "mid": "doc0_sec1_multi",
+      "did": "doc0",
+      "title": "The First Book of Moses: Called Genesis",
+      "section_ids": [
+        "doc0_sec1",
+        "doc0_sec2",
+        "doc0_sec3",
+        .....
+        "doc0_sec48",
+        "doc0_sec49",
+        "doc0_sec50",
+        "doc0_sec51"
+      ],
+       "summary": "In the creation narrative of Genesis, God creates the world and humanity, blessing them and establishing a day of rest. The story progresses through the fall of man, marked by Adam and Eve's disobedience, leading to Cain's punishment for murdering Abel, and ultimately to Noah's righteousness amidst humanity's wickedness, culminating in the flood and God's covenant with Noah. The narrative continues with the lineage of Abraham, highlighting God's promises and covenants, including the birth of Isaac, the destruction of Sodom and Gomorrah, and the trials faced by Abraham and his family, emphasizing themes of faith, obedience, and divine intervention."
+    }
+```
+
 ##### c. Document-Level Summary  
 At the top of the hierarchy, all section summaries are combined into a **global document summary** (≈300–400 tokens).  
 This serves as:
 1. A fallback for Self-RAG escalation when no specific paragraph or section provides the answer.  
 2. A semantic “fingerprint” for coarse-grained retrieval and re-ranking.
+
+Example:
+```
+{
+      "did": "doc0",
+      "name": "bible_kjv.txt",
+      "summary": "The narrative of the King James Version of the Bible, freely accessible through Project Gutenberg, spans from the creation of the world in Genesis to the establishment of a monarchy in Israel, illustrating profound themes of faith, obedience, and divine intervention. It chronicles the Israelites' journey from slavery in Egypt to the Promised Land, emphasizing the importance of community responsibility, moral conduct, and the consequences of straying from God's commands. Through the lives of key figures such as Moses, Joshua, and David, the text underscores the complexities of leadership and the enduring relationship between God and His people, ultimately reminding readers of the necessity of repentance and gratitude as they navigate their spiritual journey."
+    }
+```
 
 ##### d. Why Summaries Matter  
 Summaries transform the hierarchy from static structure into a **semantic pyramid**:  
