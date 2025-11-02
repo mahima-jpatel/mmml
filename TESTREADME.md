@@ -1,5 +1,5 @@
 # Smart Chunking for RAG
-*An intelligent document chunking system for improved retrieval quality in Retrieval-Augmented Generation (RAG).*
+An intelligent document chunking system for improved retrieval quality in Retrieval-Augmented Generation (RAG).
 
 ---
 
