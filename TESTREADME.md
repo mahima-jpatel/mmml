@@ -145,6 +145,41 @@ Requires up-front preprocessing of section detection and summarization.
 
 ---
 
+#### Contextual Summarization — The Bridge Between Sentence, Hierarchical, and Self-RAG Chunking
+
+While sentence-based chunking improved syntactic coherence, it still lacked **contextual compression**—the ability to carry meaning upward across sections.  
+To overcome this, the system introduces **multi-level summarization**, forming the core of both **Hierarchical Chunking** and **Self-RAG**.
+
+##### a. Section-Level Summaries  
+Each section is summarized **in parallel** using asynchronous OpenAI calls (up to 15 concurrent requests).  
+- Every section’s paragraphs are condensed into a ≤150-token summary prefixed with *“Summary:”*.  
+- These summaries act as lightweight surrogates that retain semantic meaning while reducing redundancy.  
+- By embedding these summaries alongside paragraphs, retrieval can back off to summaries when detailed text is too granular.
+
+Example:
+> **Section:** “Article I — Legislative Branch”  
+> **Summary:** “Establishes Congress as the law-making body composed of the House and Senate, defining their powers and election rules.”
+
+##### b. Multi-Section Summaries  
+After section summaries are created, the system merges related or adjacent sections and generates **tier-2 summaries**.  
+This captures relationships across neighboring topics or sub-sections, such as cause-and-effect or cross-referencing between clauses.
+
+##### c. Document-Level Summary  
+At the top of the hierarchy, all section summaries are combined into a **global document summary** (≈300–400 tokens).  
+This serves as:
+1. A fallback for Self-RAG escalation when no specific paragraph or section provides the answer.  
+2. A semantic “fingerprint” for coarse-grained retrieval and re-ranking.
+
+##### d. Why Summaries Matter  
+Summaries transform the hierarchy from static structure into a **semantic pyramid**:  
+- **Bottom:** full paragraphs preserve details.  
+- **Middle:** section and multi-section summaries compress local meaning.  
+- **Top:** document summary captures global context.  
+
+During Self-RAG, retrieval naturally climbs this pyramid — starting local, escalating through summaries, and finally using document-level context if needed.  
+This makes retrieval **adaptive, scalable, and meaning-aware** without re-embedding or re-chunking text.
+
+
 ### 4.2 Toward Adaptive Retrieval — Self-RAG
 
 Even hierarchical chunking cannot guarantee that a single granularity fits all questions.  
