@@ -67,7 +67,7 @@ src/
 Each component is modular, allowing easy replacement of embedding or LLM backends.
 
 ---
-## 3.5 Datasets Explored
+## 3.1 Datasets Explored
 To ensure that our chunking strategies generalize across **diverse textual structures**, we evaluated them on **seven large public-domain documents** with varying linguistic and organizational characteristics:
 
 | Dataset | Description | Structure Complexity | Primary Challenges for Chunking |
@@ -248,7 +248,7 @@ This mirrors human reasoning: start local, zoom out until confidence.
 
 ---
 
-### 4.5 Takeaway
+### 4.4 Takeaway
 
 Chunking is no longer a preprocessing step — it is an **integral part of retrieval reasoning**.  
 By evolving from naive token splits to adaptive Self-RAG, we move toward systems that **think before they fetch**.
