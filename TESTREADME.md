@@ -279,7 +279,7 @@ messages = [
                 "You are a strict retrieval evaluator. "
                 "Reply YES if the retrieved text explicitly contains the expected answer words; "
                 "otherwise reply NO.")},
-            {"role": "user", "content": f"Question: {query}\nExpected Answer: {answer}\nText:\n{text[:1200]}"},
+            {"role": "user", "content": f"Question: {query}\nExpected Answer: {answer}\nText:\n{text}"},
         ]
 ```
 
