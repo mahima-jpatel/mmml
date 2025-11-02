@@ -271,6 +271,18 @@ We computed the following metrics:
 | **Recall@K** | Fraction of queries with a relevant hit in top-K retrieved chunks. | Coverage |
 | **MRR** | Mean Reciprocal Rank of the first correct retrieval. | Ranking quality |
 
+
+LLM Judge Prompt
+```
+messages = [
+            {"role": "system", "content": (
+                "You are a strict retrieval evaluator. "
+                "Reply YES if the retrieved text explicitly contains the expected answer words; "
+                "otherwise reply NO.")},
+            {"role": "user", "content": f"Question: {query}\nExpected Answer: {answer}\nText:\n{text[:1200]}"},
+        ]
+```
+
 ---
 ## 6. Results & Discussion
 
@@ -386,7 +398,7 @@ export OPENAI_API_KEY="your_api_key_here"
 
    D. Verify and Summarize Metadata
    ```bash
-   python -m src.summarizers.summarizer.py --meta_path artifacts/hierarchical_faiss/metadata.json
+   python -m src.summarizers.summarizer --meta_path artifacts/hierarchical_faiss/metadata.json
    ```
 
 6. **Running Evaluations: After preparing artifacts, run evaluations for each retrieval mode**
@@ -407,5 +419,12 @@ export OPENAI_API_KEY="your_api_key_here"
    ```bash
    python -m src.evaluators.eval_selfrag --top_k 5 --alpha_dense 0.5
    ```
+
+### Reproducibility Notes:
+- Embedding model: all-MiniLM-L6-v2
+- FAISS index: IndexFlatIP (inner product)
+- BM25: rank_bm25.BM25Okapi with simple whitespace/lowercase tokenizer; no stemming/stopword removal.
+- Hybrid scoring: score = (1 - α) * BM25 + α * cosine_dense with α = 0.5 unless stated.
+- LLM judge (Self-RAG): gpt-4o
 
 
