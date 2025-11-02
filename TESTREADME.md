@@ -182,8 +182,6 @@ This mirrors human reasoning: start local, zoom out until confidence.
 
 While **Self-RAG** adaptively follows a single reasoning path, moving linearly from *paragraph → neighbors → section*, the next generation of retrieval systems will reason **non-linearly**, exploring multiple possible information paths simultaneously.
 
----
-
 #### MCTS-RAG: Monte-Carlo Tree Search for Retrieval
 
 **Core Idea:**  
