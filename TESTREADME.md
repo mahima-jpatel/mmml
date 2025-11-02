@@ -32,18 +32,36 @@ The final system combines **four chunking strategies** with a **Self-RAG evaluat
 ```
 src/
 ├── chunkers/
-│ ├── naive_chunker.py
-│ ├── sentence_chunker.py
-│ ├── semantic_chunker.py
-│ ├── hierarchical_chunker.py
+│ ├── naive_chunker.py              # Simple fixed-size or token-count-based text chunker (baseline)
+│ ├── smart_sentence_chunker.py     # Sentence-aware chunker using semantic similarity to detect topic shifts
+│ ├── hierarchical_chunker.py       # Multi-level chunker creating paragraph, section, and document hierarchies
 │
-├── metadata/
-│ ├── build_metadata.py # builds section, paragraph maps
-│ ├── summarize_sections.py # generates summaries for hierarchy
+├── embeddings/
+│ ├── build_hierarchical_embeddings.py  # Builds paragraph-, section-, and document-level embeddings + FAISS indices
+│ ├── build_naive_embeddings.py         # Builds flat (single-level) embeddings and BM25 index
+│ ├── build_smart_sentence_embeddings.py# Builds sentence-level embeddings using SmartSentence chunking
 │
-├── evaluation/
-│ ├── eval_retrieval.py # computes metrics (Exact, ROUGE, Cosine, LLM)
-| ├── self_rag.py
+├── evaluators/
+│ ├── eval_config.py               # Global configuration defaults (paths, constants, model names)
+│ ├── eval_metrics.py              # Implements evaluation metrics (Exact Match, Cosine, MRR, Recall@K)
+│ ├── eval_selfrag.py              # Evaluation script for Self-RAG retrieval (LLM-verified hierarchical search)
+│ ├── eval_unified.py              # Unified evaluator for flat, sentence, and hierarchical retrieval modes
+│ ├── eval_utils.py                # Shared helper functions (metric aggregation, logging, result formatting)
+│ ├── retrieval_flat.py            # Flat hybrid retrieval (BM25 + dense FAISS for paragraphs)
+│ ├── retrieval_hierarchical.py    # Hierarchical multi-level retrieval (document → section → paragraph)
+│ ├── selfrag_retrieval.py         # Self-RAG hybrid retrieval pipeline with LLM verification escalation
+│ ├── run_eval.py                  # Core evaluation loop shared across all modes (async/sync compatible)
+│
+├── summarizers/
+│ ├── summarizer_utils.py          # Utilities for summarization (chunk merging, section summaries, cleanup)
+│ ├── summarizer.py                # Runs summarization models to produce hierarchical section/document summaries
+│
+├── utils/
+│ ├── embed_utils.py               # Handles embedding creation, normalization, and batch encoding
+│ ├── index_utils.py               # FAISS index building/loading utilities (dense + hybrid)
+│ ├── io_utils.py                  # File I/O utilities (reading/writing JSON, metadata, artifacts)
+│ ├── text_utils.py                # Text cleaning, sentence tokenization, and normalization helpers
+
 ```
 
 Each component is modular, allowing easy replacement of embedding or LLM backends.
