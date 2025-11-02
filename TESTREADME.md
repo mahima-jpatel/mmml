@@ -213,7 +213,7 @@ This mirrors human reasoning: start local, zoom out until confidence.
 
 ---
 
-### 4.4 Looking Ahead — MCTS-RAG (Next Step)
+### 4.4 Looking Ahead — MCTS-RAG (Next Step - Not Implemented Yet)
 
 While **Self-RAG** adaptively follows a single reasoning path, moving linearly from paragraph → neighbors → section, the next generation of retrieval systems will reason **non-linearly**, exploring multiple possible information paths simultaneously.
 
